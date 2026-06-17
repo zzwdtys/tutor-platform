@@ -112,6 +112,7 @@ mvn spring-boot:run
 <img width="563" height="1220" alt="image" src="https://github.com/user-attachments/assets/3cb73a6f-5066-4bb2-9e2c-ef84ae884ed4" />
 
 
+
 🔧 主要接口一览
 | 接口 | 方法 | 描述 |
 |------|------|------|
@@ -119,5 +120,7 @@ mvn spring-boot:run
 | `/api/demand/create` | POST | 发布需求 |
 | `/api/appointment/accept/{id}` | POST | 接单 |
 | `/api/admin/statistics` | GET | 大屏统计数据 |
-完整接口文档请参阅 [家教服务平台技术文档.pdf](https://github.com/user-attachments/files/29043617/default.pdf)。
+
+完整接口文档请参阅[家教服务平台技术文档.pdf](https://github.com/user-attachments/files/29043803/default.pdf)
+
 
