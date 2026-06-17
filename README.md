@@ -66,20 +66,8 @@
 
 🏗️ 项目结构
 
-tutor-platform/
-├── src/main/java/com/tutor/tutorplatform/
-│ ├── common/ # 统一响应类
-│ ├── config/ # 配置类（JWT、静态资源映射）
-│ ├── controller/ # REST API 控制器
-│ ├── service/ # 业务逻辑接口与实现
-│ ├── mapper/ # MyBatis-Plus Mapper
-│ ├── entity/ # 数据库实体
-│ ├── dto/ # 数据传输对象
-│ └── utils/ # 工具类（JWT、密码加密）
-├── resources/
-│ ├── application.yml # 核心配置
-│ └── ...
-└── README.md
+<img width="444" height="451" alt="image" src="https://github.com/user-attachments/assets/674667b3-7099-4e91-b670-b2d73e72caf7" />
+
 
 2. 配置数据库
 创建 MySQL 数据库 tutor_db（UTF-8 字符集）。
@@ -98,4 +86,25 @@ mvn spring-boot:run
 在 app.json 中配置你的小程序 AppID（如需真机调试）。
 
 📸 项目截图
-(未完待续)
+登录页面
+<img width="576" height="1234" alt="image" src="https://github.com/user-attachments/assets/3b913e7c-b5a0-49ed-b610-94cf176b5544" />
+首页
+<img width="582" height="1223" alt="image" src="https://github.com/user-attachments/assets/f17c134c-927e-428d-a1bd-ac45227bd11f" />
+预约列表
+<img width="568" height="1218" alt="image" src="https://github.com/user-attachments/assets/4da7c6c9-0f79-4485-9218-dd71d83a220d" />
+个人中心
+<img width="578" height="1231" alt="image" src="https://github.com/user-attachments/assets/112bf4bf-78c7-47dc-b78f-2ef7fbac4821" />
+管理员界面
+<img width="578" height="1229" alt="image" src="https://github.com/user-attachments/assets/40f68bdf-1f6d-43f3-9443-0be71dcb0adb" />
+管理数据可视化
+<img width="563" height="1220" alt="image" src="https://github.com/user-attachments/assets/3cb73a6f-5066-4bb2-9e2c-ef84ae884ed4" />
+
+🔧 主要接口一览
+| 接口 | 方法 | 描述 |
+|------|------|------|
+| `/api/user/wxlogin` | POST | 微信登录 |
+| `/api/demand/create` | POST | 发布需求 |
+| `/api/appointment/accept/{id}` | POST | 接单 |
+| `/api/admin/statistics` | GET | 大屏统计数据 |
+完整接口文档请参阅 doc/技术文档.docx（如有）。
+
