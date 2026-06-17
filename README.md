@@ -1,3 +1,4 @@
+
 在线家教服务平台
 
 基于 Spring Boot + 微信小程序的在线家教服务平台，实现学员与教员的需求匹配、预约接单、评价反馈等完整闭环服务。前端:https://github.com/zzwdtys/tutor-platform-weixinfront
@@ -118,5 +119,5 @@ mvn spring-boot:run
 | `/api/demand/create` | POST | 发布需求 |
 | `/api/appointment/accept/{id}` | POST | 接单 |
 | `/api/admin/statistics` | GET | 大屏统计数据 |
-完整接口文档请参阅 doc/技术文档.docx（如有）。
+完整接口文档请参阅 [家教服务平台技术文档.pdf](https://github.com/user-attachments/files/29043617/default.pdf)。
 
