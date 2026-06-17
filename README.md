@@ -87,17 +87,29 @@ mvn spring-boot:run
 
 📸 项目截图
 登录页面
+
 <img width="576" height="1234" alt="image" src="https://github.com/user-attachments/assets/3b913e7c-b5a0-49ed-b610-94cf176b5544" />
+
 首页
+
 <img width="582" height="1223" alt="image" src="https://github.com/user-attachments/assets/f17c134c-927e-428d-a1bd-ac45227bd11f" />
+
 预约列表
+
 <img width="568" height="1218" alt="image" src="https://github.com/user-attachments/assets/4da7c6c9-0f79-4485-9218-dd71d83a220d" />
+
 个人中心
+
 <img width="578" height="1231" alt="image" src="https://github.com/user-attachments/assets/112bf4bf-78c7-47dc-b78f-2ef7fbac4821" />
+
 管理员界面
+
 <img width="578" height="1229" alt="image" src="https://github.com/user-attachments/assets/40f68bdf-1f6d-43f3-9443-0be71dcb0adb" />
+
 管理数据可视化
+
 <img width="563" height="1220" alt="image" src="https://github.com/user-attachments/assets/3cb73a6f-5066-4bb2-9e2c-ef84ae884ed4" />
+
 
 🔧 主要接口一览
 | 接口 | 方法 | 描述 |
