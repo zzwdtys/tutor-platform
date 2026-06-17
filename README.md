@@ -17,7 +17,7 @@
 
 > 📌 **说明**：本项目为独立开发的课程项目，主要用于学习和演示目的，部分功能仍在完善中。
 
-**前端项目**：[tutor-weixinfront](https://github.com/zzwdtys/tutor-weixinfront)
+**前端项目**：https://github.com/zzwdtys/tutor-platform-weixinfront
 
 ---
 
