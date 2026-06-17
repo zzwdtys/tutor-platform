@@ -1,6 +1,5 @@
-
-<div align="center">
 # 📚 在线家教服务平台
+<div align="center">
 
 基于 Spring Boot + 微信小程序的在线家教服务平台
 
