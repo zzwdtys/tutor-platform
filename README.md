@@ -79,10 +79,10 @@
 bash
 mvn clean install
 mvn spring-boot:run
-后端启动后访问 http://localhost:8080，接口文档可通过 Knife4j 查看。
+后端启动后访问 http://localhost:8080
 
 4. 运行微信小程序
-使用微信开发者工具打开项目中的 miniprogram/ 目录。
+使用微信开发者工具打开前端项目中的 weixinfront/ 目录。
 修改 utils/request.js 中的 BASE_URL 为你的后端地址。
 在 app.json 中配置你的小程序 AppID（如需真机调试）。
 
