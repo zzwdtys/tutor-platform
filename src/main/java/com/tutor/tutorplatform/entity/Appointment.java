@@ -1,0 +1,33 @@
+package com.tutor.tutorplatform.entity;
+
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+import java.util.Date;
+
+@Data
+@TableName("appointment")
+public class Appointment {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private Long demandId;
+    private Long resumeId;
+    private Long studentId;
+    private Long teacherId;
+    private Integer status;
+    private Date appointmentTime;
+    private Date actualTime;
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
+    public static final int STATUS_PENDING = 0;   // 待接单
+    public static final int STATUS_ACCEPTED = 1;  // 已接单
+    public static final int STATUS_REJECTED = 2;  // 已拒绝
+    public static final int STATUS_TEACHED = 3;   // 已授课
+    public static final int STATUS_COMPLETED = 4; // 已完成
+    public static final int STATUS_CANCELLED = 5; // 已取消
+    @TableField(exist = false)
+    private Boolean reviewed;
+    @TableField(exist = false)
+    private Review review;
+}
