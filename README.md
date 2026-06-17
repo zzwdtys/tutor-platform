@@ -124,3 +124,20 @@ mvn spring-boot:run
 完整接口文档请参阅[家教服务平台技术文档.pdf](https://github.com/user-attachments/files/29043803/default.pdf)
 
 
+📈 未来计划
+增加关注教员功能，支持学员收藏心仪的教师。
+接入消息红点提示，预约状态变化时主动提醒用户。
+实现学员与教员私信对话功能，方便沟通确认上课细节。
+支持拒绝理由填写，提升用户体验。
+优化头像上传至云存储，并增加文件大小校验。
+考虑将后端云部署,实现外网访问
+
+
+🤝 贡献指南
+本项目为个人课程设计，暂不接受外部贡献。如有建议，欢迎提 Issue 或联系作者。
+
+
+📧 联系方式
+作者：zzwdtys
+邮箱：zzwdtys@outlook.com
+GitHub：https://github.com/zzwdtys
