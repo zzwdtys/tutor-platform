@@ -11,4 +11,4 @@ spring:
       continue-on-error: true
 
 server:
-  base-url: https://tutor-platform-production-1776.up.railway.app
+  base-url: https://tutor-platform-production-1b9b.up.railway.app
