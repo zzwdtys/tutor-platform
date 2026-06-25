@@ -33,7 +33,12 @@ public class JwtUtil {
     }
 
     public Long getUserIdFromToken(String token) {
-        return Long.parseLong(getClaimsFromToken(token).getSubject());
+        String subject = getClaimsFromToken(token).getSubject();
+        if (subject == null || subject.isEmpty()) {
+            // tempToken 没有 userId，只有 openid
+            return null;
+        }
+        return Long.parseLong(subject);
     }
 
     public Integer getRoleFromToken(String token) {

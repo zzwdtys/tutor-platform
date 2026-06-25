@@ -32,7 +32,11 @@ public class BaseController {
             System.out.println("[DEBUG] Failed to parse token: " + e.getMessage());
             throw new UnauthenticatedException("未登录或token无效");
         }
-        return jwtUtil.getUserIdFromToken(token);
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        if (userId == null) {
+            throw new UnauthenticatedException("临时凭证不支持此操作，请先完善个人信息");
+        }
+        return userId;
     }
 
     /**
