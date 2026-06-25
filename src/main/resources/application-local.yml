@@ -1,0 +1,5 @@
+# 本地开发配置（不上传GitHub）
+ai:
+  deepseek:
+    api-key: sk-69ac03ba7a5c4a6d9201c1a9dfe724c4
+    base-url: https://api.deepseek.com/v1
