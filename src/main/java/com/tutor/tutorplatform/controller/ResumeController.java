@@ -53,4 +53,13 @@ public class ResumeController {
         }
         return Result.success(resume);
     }
+
+    @GetMapping("/user/{userId}")
+    public Result<Resume> getResumeByUserId(@PathVariable Long userId) {
+        Resume resume = resumeService.getByUserId(userId);
+        if (resume == null) {
+            return Result.error("该用户暂无简历");
+        }
+        return Result.success(resume);
+    }
 }

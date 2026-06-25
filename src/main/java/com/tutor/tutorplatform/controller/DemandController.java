@@ -5,10 +5,14 @@ import com.tutor.tutorplatform.dto.DemandDTO;
 import com.tutor.tutorplatform.entity.Appointment;
 import com.tutor.tutorplatform.entity.Demand;
 import com.tutor.tutorplatform.entity.Review;
+import com.tutor.tutorplatform.entity.User;
 import com.tutor.tutorplatform.service.DemandService;
 import com.tutor.tutorplatform.service.ReviewService;
 import com.tutor.tutorplatform.service.AppointmentService;
+import com.tutor.tutorplatform.service.UserService;
 import com.tutor.tutorplatform.utils.JwtUtil;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +34,9 @@ public class DemandController extends BaseController{
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/create")
     public Result<Demand> createDemand(@RequestBody DemandDTO demandDTO, HttpServletRequest request) {
@@ -87,12 +94,7 @@ public class DemandController extends BaseController{
         if (demand == null || !demand.getUserId().equals(userId)) {
             return Result.error("需求不存在或权限不足");
         }
-        // 只允许删除状态为“已关闭”的需求（或允许删除任意状态？根据业务决定）
-        // 为安全，只删除已关闭的
-        if (demand.getStatus() != 3) {
-            return Result.error("只能删除已关闭的需求");
-        }
-        // 级联删除关联的预约和评价
+        // 允许删除任意状态的需求，级联删除关联的预约和评价
         List<Appointment> appointments = appointmentService.lambdaQuery()
                 .eq(Appointment::getDemandId, id)
                 .list();
@@ -112,5 +114,41 @@ public class DemandController extends BaseController{
             return Result.error("需求不存在或权限不足");
         }
         return Result.success(demand);
+    }
+
+    @GetMapping("/public/{id}")
+    public Result<Demand> getDemandPublic(@PathVariable Long id) {
+        Demand demand = demandService.getById(id);
+        if (demand == null) return Result.error("需求不存在");
+        demand.setViewCount(demand.getViewCount() == null ? 1 : demand.getViewCount() + 1);
+        demandService.updateById(demand);
+        User publisher = userService.getById(demand.getUserId());
+        if (publisher != null) {
+            demand.setUserNickname(publisher.getNickname());
+            demand.setUserAvatar(publisher.getAvatar());
+        }
+        return Result.success(demand);
+    }
+
+    @GetMapping("/all")
+    public Result<List<Demand>> getAllDemands(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Demand> w =
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
+        w.eq(Demand::getStatus, 0);
+        if (StringUtils.isNotBlank(keyword)) {
+            w.and(q -> q.like(Demand::getSubject, keyword)
+                .or().like(Demand::getDescription, keyword));
+        }
+        w.orderByDesc(Demand::getCreateTime);
+        Page<Demand> pg = new Page<>(page, pageSize);
+        Page<Demand> rs = demandService.page(pg, w);
+        for (Demand d : rs.getRecords()) {
+            User u = userService.getById(d.getUserId());
+            if (u != null) { d.setUserNickname(u.getNickname()); d.setUserAvatar(u.getAvatar()); }
+        }
+        return Result.success(rs.getRecords());
     }
 }

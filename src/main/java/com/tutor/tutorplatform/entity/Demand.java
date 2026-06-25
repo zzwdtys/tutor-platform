@@ -18,6 +18,13 @@ public class Demand {
     private Integer teacherGender;
     private String description;
     private Integer status;
+    @TableField(exist = false)
+    private Integer viewCount;     // 浏览量
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
+    // 非数据库字段
+    @TableField(exist = false)
+    private String userNickname;
+    @TableField(exist = false)
+    private String userAvatar;
 }

@@ -124,6 +124,9 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
             return false;
         }
         appointment.setStatus(2);
+        if (reason != null && !reason.isEmpty()) {
+            appointment.setRejectReason(reason);
+        }
         return updateById(appointment);
     }
 

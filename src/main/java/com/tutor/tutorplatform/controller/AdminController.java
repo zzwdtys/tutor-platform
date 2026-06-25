@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.beans.Transient;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -38,13 +38,20 @@ public class AdminController extends BaseController {
     @Autowired
     private ReviewService reviewService;
 
+    private void checkAdmin(HttpServletRequest request) {
+        Integer role = getRoleFromRequest(request);
+        if (role == null || role != 2) {
+            throw new RuntimeException("权限不足，仅管理员可操作");
+        }
+    }
+
     // 获取用户列表（支持角色和关键词筛选）
     @GetMapping("/users")
     public Result<List<User>> getUsers(
             @RequestParam(required = false) Integer role,
-            @RequestParam(required = false) String keyword) {
-        // 权限校验：当前登录用户必须是管理员（role=2）
-        // 可以从 request 中获取，这里简化，可以在 BaseController 中提供获取当前用户角色的方法
+            @RequestParam(required = false) String keyword,
+            HttpServletRequest request) {
+        checkAdmin(request);
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         if (role != null) {
             wrapper.eq(User::getRole, role);

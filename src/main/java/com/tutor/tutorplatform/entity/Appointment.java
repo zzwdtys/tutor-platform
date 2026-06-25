@@ -16,6 +16,10 @@ public class Appointment {
     private Integer status;
     private Date appointmentTime;
     private Date actualTime;
+    @TableField(exist = false)
+    private String rejectReason;   // 教员拒绝理由
+    @TableField(exist = false)
+    private String cancelReason;   // 学员取消理由
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

@@ -44,6 +44,14 @@ public class SearchService {
             wrapper.le(Resume::getPrice, maxPrice);
         }
         List<Resume> list = resumeMapper.selectList(wrapper);
+        // Apply sorting based on sortType
+        if (sortType != null) {
+            switch (sortType) {
+                case 1: list.sort((a, b) -> a.getPrice() - b.getPrice()); break;
+                case 2: list.sort((a, b) -> b.getPrice() - a.getPrice()); break;
+                default: break;
+            }
+        }
         if (list.isEmpty()) return list;
 
         // 2. 批量获取用户头像
