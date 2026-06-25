@@ -14,7 +14,7 @@ import java.util.*;
 @Service
 public class AiAssistantService {
 
-    @Value("${ai.deepseek.api-key}")
+    @Value("${ai.deepseek.api-key:NOT_SET}")
     private String apiKey;
 
     @Value("${ai.deepseek.base-url:https://api.deepseek.com/v1}")
@@ -122,6 +122,9 @@ public class AiAssistantService {
     }
 
     private String callDeepSeek(String sys, String msg) {
+        if ("NOT_SET".equals(apiKey) || apiKey == null || apiKey.isBlank()) {
+            return "AI助手尚未配置API密钥，请在Railway环境变量中设置 AI_DEEPSEEK_API_KEY。";
+        }
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("model", "deepseek-chat");
