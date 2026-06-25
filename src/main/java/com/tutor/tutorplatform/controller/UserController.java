@@ -65,11 +65,19 @@ public class UserController extends BaseController {
             data.put("token", token);
             data.put("userId", user.getId());
             data.put("role", user.getRole());
-            data.put("needComplete", false);
+            data.put("needComplete", !user.getNickname().equals("微信用户") && user.getPhone() != null);
         } else {
-            // 新用户：生成临时 token，携带 openid
-            String tempToken = jwtUtil.generateTempToken(openid);
-            data.put("tempToken", tempToken);
+            // 新用户：自动注册并生成 token
+            User newUser = new User();
+            newUser.setOpenid(openid);
+            newUser.setRole(0);
+            newUser.setNickname("微信用户");
+            newUser.setStatus(1);
+            userService.save(newUser);
+            String token = jwtUtil.generateToken(newUser.getId(), newUser.getRole());
+            data.put("token", token);
+            data.put("userId", newUser.getId());
+            data.put("role", newUser.getRole());
             data.put("needComplete", true);
         }
         return Result.success(data);
