@@ -14,7 +14,7 @@ import java.util.*;
 @Service
 public class AiAssistantService {
 
-    @Value("${ai.deepseek.api-key:sk-69ac03ba7a5c4a6d9201c1a9dfe724c4}")
+    @Value("${ai.deepseek.api-key}")
     private String apiKey;
 
     @Value("${ai.deepseek.base-url:https://api.deepseek.com/v1}")
