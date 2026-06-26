@@ -60,11 +60,13 @@ public class SearchService {
         Map<Long, String> avatarMap = users.stream()
                 .collect(Collectors.toMap(User::getId, u -> u.getAvatar() != null ? u.getAvatar() : ""));
 
-        // 3. 填充临时字段 avatar（并转换为完整 URL）
+        // 3. 填充临时字段 avatar（并转换为完整 URL，过滤默认头像）
         list.forEach(resume -> {
             String avatar = avatarMap.get(resume.getUserId());
-            if (StringUtils.isNotBlank(avatar) && !avatar.startsWith("http")) {
+            if (StringUtils.isNotBlank(avatar) && !avatar.startsWith("http") && !avatar.contains("default")) {
                 avatar = baseUrl + avatar;
+            } else if (StringUtils.isNotBlank(avatar) && avatar.contains("default")) {
+                avatar = "";
             }
             resume.setAvatar(avatar);
         });

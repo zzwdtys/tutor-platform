@@ -33,6 +33,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     private String fixAvatar(String avatar) {
         if (avatar == null || avatar.isEmpty()) return null;
+        // 默认头像路径视为无头像，由前端显示本地默认头像
+        if (avatar.contains("default")) return null;
         if (avatar.startsWith("http")) return avatar;
         return baseUrl + avatar;
     }
@@ -40,6 +42,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Override
     @Transactional
     public Message sendMessage(Long senderId, Long receiverId, String content) {
+        if (senderId.equals(receiverId)) {
+            throw new RuntimeException("不能给自己发送消息");
+        }
         // 获取或创建会话
         Conversation conv = getOrCreateConversation(senderId, receiverId);
         // 保存消息
