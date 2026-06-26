@@ -16,6 +16,7 @@ import com.tutor.tutorplatform.service.ReviewService;
 import com.tutor.tutorplatform.service.UserService;
 import com.tutor.tutorplatform.dto.CreateAppointmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 @Service
 public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appointment> implements AppointmentService {
 
+    @Value("${server.base-url}")
+    private String baseUrl;
+
     @Autowired
     private DemandService demandService;
     @Autowired
@@ -41,6 +45,13 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     private UserService userService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private String fixAvatar(String avatar) {
+        if (avatar == null || avatar.isEmpty()) return null;
+        if (avatar.contains("default")) return null;
+        if (avatar.startsWith("http") || avatar.startsWith("data:")) return avatar;
+        return baseUrl + avatar;
+    }
 
     // 填充对方信息
     private void fillOtherParty(List<Appointment> list, boolean fillTeacher) {
@@ -59,7 +70,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
             if (other != null) {
                 item.setOtherPartyId(other.getId());
                 item.setOtherPartyNickname(other.getNickname());
-                item.setOtherPartyAvatar(other.getAvatar());
+                item.setOtherPartyAvatar(fixAvatar(other.getAvatar()));
             }
         }
     }
