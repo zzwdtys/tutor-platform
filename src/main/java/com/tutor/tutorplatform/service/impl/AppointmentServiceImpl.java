@@ -37,22 +37,34 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
 
     @Override
     @Transactional
-    public Appointment createAppointment(Long studentId, CreateAppointmentDTO dto) {
-        // ... 保持不变 ...
+    public Appointment createAppointment(Long userId, CreateAppointmentDTO dto) {
         Demand demand = demandService.getById(dto.getDemandId());
-        if (demand == null || !demand.getUserId().equals(studentId)) {
-            throw new RuntimeException("需求不存在或权限不足");
+        if (demand == null) {
+            throw new RuntimeException("需求不存在");
         }
         Resume resume = resumeService.getById(dto.getResumeId());
         if (resume == null) {
             throw new RuntimeException("教员简历不存在");
         }
 
+        // 判断发起方：学员发起（用户是需求所有者）还是教员发起（用户是简历所有者）
+        boolean isStudent = demand.getUserId().equals(userId);
+        boolean isTeacher = resume.getUserId().equals(userId);
+        if (!isStudent && !isTeacher) {
+            throw new RuntimeException("权限不足：您既不是该需求的发布者，也不是该简历的所有者");
+        }
+
+        Long studentId = demand.getUserId();
+        Long teacherId = resume.getUserId();
+        if (studentId.equals(teacherId)) {
+            throw new RuntimeException("不能预约自己");
+        }
+
         Appointment appointment = new Appointment();
         appointment.setDemandId(dto.getDemandId());
         appointment.setResumeId(dto.getResumeId());
         appointment.setStudentId(studentId);
-        appointment.setTeacherId(resume.getUserId());
+        appointment.setTeacherId(teacherId);
         appointment.setStatus(0);
         String timeStr = dto.getAppointmentTime();
         if (timeStr != null && timeStr.length() == 10) {

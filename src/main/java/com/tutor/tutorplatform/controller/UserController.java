@@ -55,7 +55,7 @@ public class UserController extends BaseController {
     // ==================== 微信登录（模拟/真实） ====================
     @PostMapping("/wxlogin")
     public Result<Map<String, Object>> wxLogin(@RequestParam String code) {
-        String openid = wxLoginService.isMockCode(code) ? wxLoginService.getMockOpenid(code) : wxLoginService.getSessionInfo(code).getOpenid();
+        String openid = wxLoginService.getSessionInfo(code).getOpenid();
 
         User user = userService.getByOpenid(openid);
         Map<String, Object> data = new HashMap<>();
@@ -88,7 +88,7 @@ public class UserController extends BaseController {
     public Result<Map<String, Object>> wxLoginWithProfile(@RequestParam String code,
                                                           @RequestParam(required = false) String nickname,
                                                           @RequestParam(required = false) String avatar) {
-        String openid = wxLoginService.isMockCode(code) ? wxLoginService.getMockOpenid(code) : wxLoginService.getSessionInfo(code).getOpenid();
+        String openid = wxLoginService.getSessionInfo(code).getOpenid();
 
         Map<String, Object> data = new HashMap<>();
         // 查询未删除的用户
@@ -334,5 +334,36 @@ public class UserController extends BaseController {
             publicInfo.setAvatar(null);
         }
         return Result.success(publicInfo);
+    }
+
+    // ==================== 忘记密码 - 验证手机号 ====================
+    @PostMapping("/reset-pwd/verify")
+    public Result<Map<String, Object>> verifyPhoneForReset(@RequestBody Map<String, String> body) {
+        String phone = body.get("phone");
+        if (StringUtils.isBlank(phone)) {
+            return Result.error("请输入手机号");
+        }
+        User user = userService.lambdaQuery().eq(User::getPhone, phone).one();
+        if (user == null) {
+            return Result.error("该手机号未注册");
+        }
+        return Result.success(Map.of("userId", user.getId()));
+    }
+
+    // ==================== 忘记密码 - 重置密码 ====================
+    @PostMapping("/reset-pwd")
+    public Result<String> resetPassword(@RequestBody Map<String, Object> body) {
+        Long userId = Long.valueOf(body.get("userId").toString());
+        String newPassword = (String) body.get("newPassword");
+        if (StringUtils.isBlank(newPassword) || newPassword.length() < 6) {
+            return Result.error("密码至少6位");
+        }
+        User user = userService.getById(userId);
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+        user.setPassword(PasswordUtil.encode(newPassword));
+        userService.updateById(user);
+        return Result.success("密码重置成功");
     }
 }
