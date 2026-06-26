@@ -142,12 +142,14 @@ public class UserController extends BaseController {
             return Result.error(401, "未登录或用户不存在");
         }
         // 头像处理：如果有自定义头像且非完整URL，拼接baseUrl
-        if (StringUtils.isNotBlank(user.getAvatar())) {
+        // 默认头像路径（含 "default"）视为无头像，由前端根据角色显示本地默认头像
+        if (StringUtils.isNotBlank(user.getAvatar()) && !user.getAvatar().contains("default")) {
             if (!user.getAvatar().startsWith("http")) {
                 user.setAvatar(baseUrl + user.getAvatar());
             }
+        } else {
+            user.setAvatar(null);
         }
-        // 无头像时不设置默认值，由前端根据角色显示本地默认头像
         user.setOpenid(null);
         return Result.success(user);
     }
@@ -324,8 +326,12 @@ public class UserController extends BaseController {
         publicInfo.setAvatar(user.getAvatar());
         publicInfo.setSchool(user.getSchool());
         publicInfo.setRole(user.getRole());
-        if (StringUtils.isNotBlank(publicInfo.getAvatar()) && !publicInfo.getAvatar().startsWith("http")) {
+        if (StringUtils.isNotBlank(publicInfo.getAvatar())
+                && !publicInfo.getAvatar().startsWith("http")
+                && !publicInfo.getAvatar().contains("default")) {
             publicInfo.setAvatar(baseUrl + publicInfo.getAvatar());
+        } else if (StringUtils.isNotBlank(publicInfo.getAvatar()) && publicInfo.getAvatar().contains("default")) {
+            publicInfo.setAvatar(null);
         }
         return Result.success(publicInfo);
     }
