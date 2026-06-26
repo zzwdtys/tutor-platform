@@ -6,6 +6,7 @@ import com.tutor.tutorplatform.entity.Appointment;
 import com.tutor.tutorplatform.service.AppointmentService;
 import com.tutor.tutorplatform.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -23,6 +24,15 @@ public class AppointmentController extends BaseController {
     private JwtUtil jwtUtil;
     @Autowired
     private com.tutor.tutorplatform.service.UserService userService;
+    @Value("${server.base-url}")
+    private String baseUrl;
+
+    private String fixAvatar(String avatar) {
+        if (avatar == null || avatar.isEmpty()) return null;
+        if (avatar.contains("default")) return null;
+        if (avatar.startsWith("http") || avatar.startsWith("data:")) return avatar;
+        return baseUrl + avatar;
+    }
 
     @PostMapping("/create")
     public Result<Appointment> createAppointment(@RequestBody CreateAppointmentDTO dto,
@@ -61,7 +71,7 @@ public class AppointmentController extends BaseController {
         if (other != null) {
             apt.setOtherPartyId(other.getId());
             apt.setOtherPartyNickname(other.getNickname());
-            apt.setOtherPartyAvatar(other.getAvatar());
+            apt.setOtherPartyAvatar(fixAvatar(other.getAvatar()));
         }
         return Result.success(apt);
     }
