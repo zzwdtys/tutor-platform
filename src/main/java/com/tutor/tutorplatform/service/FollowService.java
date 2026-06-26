@@ -9,8 +9,8 @@ public interface FollowService extends IService<Follow> {
     boolean toggleFollow(Long studentId, Long teacherId);
     /** 检查是否已关注 */
     boolean isFollowing(Long studentId, Long teacherId);
-    /** 获取学员关注的教员列表（含教员信息） */
-    List<Follow> getFollowList(Long studentId);
+    /** 获取关注列表（学员看教员，教员看学员） */
+    List<Follow> getFollowList(Long userId, Integer role);
     /** 获取学员关注数量 */
     Long getFollowCount(Long studentId);
 }

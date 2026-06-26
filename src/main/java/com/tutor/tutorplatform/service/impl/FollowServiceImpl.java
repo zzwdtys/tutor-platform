@@ -66,31 +66,49 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
     }
 
     @Override
-    public List<Follow> getFollowList(Long studentId) {
+    public List<Follow> getFollowList(Long userId, Integer role) {
         LambdaQueryWrapper<Follow> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Follow::getStudentId, studentId).orderByDesc(Follow::getCreateTime);
+        if (role != null && role == 1) {
+            // 教员：查关注了哪些学员（by teacher_id）
+            wrapper.eq(Follow::getTeacherId, userId);
+        } else {
+            // 学员：查关注了哪些教员（by student_id）
+            wrapper.eq(Follow::getStudentId, userId);
+        }
+        wrapper.orderByDesc(Follow::getCreateTime);
         List<Follow> follows = this.list(wrapper);
         if (follows.isEmpty()) return follows;
 
-        // 批量获取教员信息
-        List<Long> teacherIds = follows.stream().map(Follow::getTeacherId).collect(Collectors.toList());
-        List<User> users = userService.listByIds(teacherIds);
-        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, u -> u));
-
-        // 获取教员的简历信息
-        List<Resume> resumes = resumeService.lambdaQuery().in(Resume::getUserId, teacherIds).list();
-        Map<Long, Resume> resumeMap = resumes.stream().collect(Collectors.toMap(Resume::getUserId, r -> r));
-
-        for (Follow follow : follows) {
-            User teacher = userMap.get(follow.getTeacherId());
-            if (teacher != null) {
-                follow.setTeacherNickname(teacher.getNickname());
-                follow.setTeacherAvatar(fixAvatar(teacher.getAvatar()));
+        if (role != null && role == 1) {
+            // 教员视角：填充学员信息
+            List<Long> studentIds = follows.stream().map(Follow::getStudentId).collect(Collectors.toList());
+            List<User> users = userService.listByIds(studentIds);
+            Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, u -> u));
+            for (Follow follow : follows) {
+                User student = userMap.get(follow.getStudentId());
+                if (student != null) {
+                    follow.setTeacherNickname(student.getNickname());
+                    follow.setTeacherAvatar(fixAvatar(student.getAvatar()));
+                }
             }
-            Resume resume = resumeMap.get(follow.getTeacherId());
-            if (resume != null) {
-                follow.setTeacherSubjects(resume.getSubjects());
-                follow.setTeacherPrice(resume.getPrice());
+        } else {
+            // 学员视角：填充教员信息
+            List<Long> teacherIds = follows.stream().map(Follow::getTeacherId).collect(Collectors.toList());
+            List<User> users = userService.listByIds(teacherIds);
+            Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, u -> u));
+            List<Resume> resumes = resumeService.lambdaQuery().in(Resume::getUserId, teacherIds).list();
+            Map<Long, Resume> resumeMap = resumes.stream().collect(Collectors.toMap(Resume::getUserId, r -> r));
+            for (Follow follow : follows) {
+                User teacher = userMap.get(follow.getTeacherId());
+                if (teacher != null) {
+                    follow.setTeacherNickname(teacher.getNickname());
+                    follow.setTeacherAvatar(fixAvatar(teacher.getAvatar()));
+                }
+                Resume resume = resumeMap.get(follow.getTeacherId());
+                if (resume != null) {
+                    follow.setTeacherSubjects(resume.getSubjects());
+                    follow.setTeacherPrice(resume.getPrice());
+                }
             }
         }
         return follows;

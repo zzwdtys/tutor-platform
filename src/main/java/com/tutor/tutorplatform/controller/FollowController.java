@@ -34,7 +34,8 @@ public class FollowController extends BaseController {
 
     @GetMapping("/list")
     public Result<List<Follow>> getFollowList(HttpServletRequest request) {
-        Long studentId = getUserIdFromRequest(request);
-        return Result.success(followService.getFollowList(studentId));
+        Long userId = getUserIdFromRequest(request);
+        Integer role = getRoleFromRequest(request);
+        return Result.success(followService.getFollowList(userId, role));
     }
 }
