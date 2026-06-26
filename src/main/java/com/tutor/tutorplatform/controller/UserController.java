@@ -122,7 +122,7 @@ public class UserController extends BaseController {
         newUser.setOpenid(openid);
         newUser.setRole(0);
         newUser.setNickname(StringUtils.isBlank(nickname) ? "微信用户" : nickname);
-        newUser.setAvatar(StringUtils.isBlank(avatar) ? "/uploads/avatars/avatar_student_default.png" : avatar);
+        newUser.setAvatar(StringUtils.isBlank(avatar) ? null : avatar);
         newUser.setStatus(1);
         userService.save(newUser);
         String token = jwtUtil.generateToken(newUser.getId(), newUser.getRole());
@@ -141,16 +141,13 @@ public class UserController extends BaseController {
         if (user == null) {
             return Result.error(401, "未登录或用户不存在");
         }
-        // 头像处理：拼接完整 URL
+        // 头像处理：如果有自定义头像且非完整URL，拼接baseUrl
         if (StringUtils.isNotBlank(user.getAvatar())) {
             if (!user.getAvatar().startsWith("http")) {
                 user.setAvatar(baseUrl + user.getAvatar());
             }
-        } else {
-            // 为空时设置默认头像
-            String defaultAvatar = user.getRole() == 0 ? "/uploads/avatars/avatar_student_default.png" : "/uploads/avatars/avatar_teacher_default.png";
-            user.setAvatar(baseUrl + defaultAvatar);
         }
+        // 无头像时不设置默认值，由前端根据角色显示本地默认头像
         user.setOpenid(null);
         return Result.success(user);
     }
@@ -190,11 +187,7 @@ public class UserController extends BaseController {
         user.setRole(registerDTO.getRole());
         user.setEmail(registerDTO.getEmail());
         user.setNickname(registerDTO.getNickname());
-        if (registerDTO.getRole() == 0) {
-            user.setAvatar("/uploads/avatars/images/avatars/avatar_student_default.png");
-        } else {
-            user.setAvatar("/uploads/avatars/images/avatars/avatar_teacher_default.png");
-        }
+        // 不设置默认头像，由前端根据角色显示本地默认头像
         user.setStatus(1);
         userService.save(user);
         String token = jwtUtil.generateToken(user.getId(), user.getRole());
