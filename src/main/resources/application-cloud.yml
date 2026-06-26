@@ -10,5 +10,9 @@ spring:
       schema-locations: classpath:init_new_tables.sql
       continue-on-error: true
 
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
 server:
   base-url: https://tutor-platform-production-1b9b.up.railway.app
