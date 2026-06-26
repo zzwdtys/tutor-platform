@@ -27,6 +27,10 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
 jwt:
   secret: your_jwt_secret_key_at_least_256_bits_long_123456
   expire: 86400000  # 24小时

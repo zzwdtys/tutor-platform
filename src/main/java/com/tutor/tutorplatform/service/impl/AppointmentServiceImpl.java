@@ -100,6 +100,25 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     }
 
     @Override
+    public List<Appointment> getInitiatedAppointments(Long teacherId) {
+        List<Appointment> list = lambdaQuery()
+                .eq(Appointment::getTeacherId, teacherId)
+                .orderByDesc(Appointment::getCreateTime)
+                .list();
+        for (Appointment item : list) {
+            LambdaQueryWrapper<Review> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Review::getAppointmentId, item.getId());
+            Integer count = Math.toIntExact(reviewMapper.selectCount(wrapper));
+            item.setReviewed(count != null && count > 0);
+            Review review = reviewService.lambdaQuery()
+                    .eq(Review::getAppointmentId, item.getId())
+                    .one();
+            item.setReview(review);
+        }
+        return list;
+    }
+
+    @Override
     public List<Appointment> getTeacherAppointments(Long teacherId) {
         return lambdaQuery()
                 .eq(Appointment::getTeacherId, teacherId)

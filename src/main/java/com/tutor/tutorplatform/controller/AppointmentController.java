@@ -32,8 +32,13 @@ public class AppointmentController extends BaseController {
 
     @GetMapping("/student/list")
     public Result<List<Appointment>> getStudentAppointments(HttpServletRequest request) {
-        Long studentId = getUserIdFromRequest(request);
-        return Result.success(appointmentService.getStudentAppointments(studentId));
+        Long userId = getUserIdFromRequest(request);
+        Integer role = getRoleFromRequest(request);
+        // 学员看自己发起的，教员也看自己从需求广场发起的预约
+        if (role != null && role == 1) {
+            return Result.success(appointmentService.getInitiatedAppointments(userId));
+        }
+        return Result.success(appointmentService.getStudentAppointments(userId));
     }
 
     @GetMapping("/teacher/list")
