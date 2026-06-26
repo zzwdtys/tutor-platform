@@ -29,6 +29,8 @@ public class AiAssistantService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
+
     public String chat(Long userId, String message) {
         String sysPrompt = "你是在线家教服务平台的AI助手。\n" +
             "你的职责范围仅限于：家教匹配、学习需求分析、教员推荐、简历优化、预约流程指导、学习方法建议。\n" +
