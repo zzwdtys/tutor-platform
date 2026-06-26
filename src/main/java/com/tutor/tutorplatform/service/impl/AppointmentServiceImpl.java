@@ -8,10 +8,12 @@ import com.tutor.tutorplatform.entity.Resume;
 import com.tutor.tutorplatform.entity.Review;
 import com.tutor.tutorplatform.mapper.AppointmentMapper;
 import com.tutor.tutorplatform.mapper.ReviewMapper;
+import com.tutor.tutorplatform.entity.User;
 import com.tutor.tutorplatform.service.AppointmentService;
 import com.tutor.tutorplatform.service.DemandService;
 import com.tutor.tutorplatform.service.ResumeService;
 import com.tutor.tutorplatform.service.ReviewService;
+import com.tutor.tutorplatform.service.UserService;
 import com.tutor.tutorplatform.dto.CreateAppointmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appointment> implements AppointmentService {
@@ -32,8 +37,32 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     private ReviewMapper reviewMapper;
     @Autowired
     private ReviewService reviewService;
+    @Autowired
+    private UserService userService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    // 填充对方信息
+    private void fillOtherParty(List<Appointment> list, boolean fillTeacher) {
+        if (list.isEmpty()) return;
+        List<Long> userIds = list.stream()
+            .map(a -> fillTeacher ? a.getTeacherId() : a.getStudentId())
+            .distinct().collect(Collectors.toList());
+        List<User> users = userService.listByIds(userIds);
+        Map<Long, User> userMap = new HashMap<>();
+        for (User u : users) {
+            userMap.put(u.getId(), u);
+        }
+        for (Appointment item : list) {
+            Long otherId = fillTeacher ? item.getTeacherId() : item.getStudentId();
+            User other = userMap.get(otherId);
+            if (other != null) {
+                item.setOtherPartyId(other.getId());
+                item.setOtherPartyNickname(other.getNickname());
+                item.setOtherPartyAvatar(other.getAvatar());
+            }
+        }
+    }
 
     @Override
     @Transactional
@@ -96,6 +125,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
                     .one();
             item.setReview(review);
         }
+        fillOtherParty(list, true); // 对方是教员
         return list;
     }
 
@@ -115,15 +145,18 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
                     .one();
             item.setReview(review);
         }
+        fillOtherParty(list, false); // 对方是学员
         return list;
     }
 
     @Override
     public List<Appointment> getTeacherAppointments(Long teacherId) {
-        return lambdaQuery()
+        List<Appointment> list = lambdaQuery()
                 .eq(Appointment::getTeacherId, teacherId)
                 .orderByDesc(Appointment::getCreateTime)
                 .list();
+        fillOtherParty(list, false); // 对方是学员
+        return list;
     }
 
     @Override

@@ -21,6 +21,8 @@ public class AppointmentController extends BaseController {
     private AppointmentService appointmentService;
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
+    private com.tutor.tutorplatform.service.UserService userService;
 
     @PostMapping("/create")
     public Result<Appointment> createAppointment(@RequestBody CreateAppointmentDTO dto,
@@ -28,6 +30,25 @@ public class AppointmentController extends BaseController {
         Long studentId = getUserIdFromRequest(request);
         Appointment appointment = appointmentService.createAppointment(studentId, dto);
         return Result.success(appointment);
+    }
+
+    @GetMapping("/{id}")
+    public Result<Appointment> getAppointment(@PathVariable Long id, HttpServletRequest request) {
+        Long userId = getUserIdFromRequest(request);
+        Appointment apt = appointmentService.getById(id);
+        if (apt == null) return Result.error("预约不存在");
+        if (!userId.equals(apt.getStudentId()) && !userId.equals(apt.getTeacherId())) {
+            return Result.error("无权查看");
+        }
+        // 填充对方信息
+        Long otherId = userId.equals(apt.getStudentId()) ? apt.getTeacherId() : apt.getStudentId();
+        com.tutor.tutorplatform.entity.User other = userService.getById(otherId);
+        if (other != null) {
+            apt.setOtherPartyId(other.getId());
+            apt.setOtherPartyNickname(other.getNickname());
+            apt.setOtherPartyAvatar(other.getAvatar());
+        }
+        return Result.success(apt);
     }
 
     @GetMapping("/student/list")

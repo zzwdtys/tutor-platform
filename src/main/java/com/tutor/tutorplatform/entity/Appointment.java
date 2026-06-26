@@ -34,4 +34,11 @@ public class Appointment {
     private Boolean reviewed;
     @TableField(exist = false)
     private Review review;
+    // 对方信息（用于列表展示）
+    @TableField(exist = false)
+    private Long otherPartyId;
+    @TableField(exist = false)
+    private String otherPartyNickname;
+    @TableField(exist = false)
+    private String otherPartyAvatar;
 }
