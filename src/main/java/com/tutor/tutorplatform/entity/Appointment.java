@@ -14,6 +14,7 @@ public class Appointment {
     private Long studentId;
     private Long teacherId;
     private Integer status;
+    private Integer initiator;  // 0=学员发起 1=教员发起
     private Date appointmentTime;
     private Date actualTime;
     @TableField(exist = false)

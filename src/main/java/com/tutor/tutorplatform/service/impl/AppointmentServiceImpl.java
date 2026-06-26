@@ -95,6 +95,8 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
         appointment.setStudentId(studentId);
         appointment.setTeacherId(teacherId);
         appointment.setStatus(0);
+        // 记录发起方：学员发起=0，教员从需求广场发起=1
+        appointment.setInitiator(isTeacher ? 1 : 0);
         String timeStr = dto.getAppointmentTime();
         if (timeStr != null && timeStr.length() == 10) {
             timeStr = timeStr + " 12:00:00";
@@ -112,6 +114,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     public List<Appointment> getStudentAppointments(Long studentId) {
         List<Appointment> list = lambdaQuery()
                 .eq(Appointment::getStudentId, studentId)
+                .eq(Appointment::getInitiator, 0)  // 学员发起的
                 .orderByDesc(Appointment::getCreateTime)
                 .list();
         for (Appointment item : list) {
@@ -133,6 +136,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     public List<Appointment> getInitiatedAppointments(Long teacherId) {
         List<Appointment> list = lambdaQuery()
                 .eq(Appointment::getTeacherId, teacherId)
+                .eq(Appointment::getInitiator, 1)  // 教员主动发起的
                 .orderByDesc(Appointment::getCreateTime)
                 .list();
         for (Appointment item : list) {
@@ -153,6 +157,7 @@ public class AppointmentServiceImpl extends ServiceImpl<AppointmentMapper, Appoi
     public List<Appointment> getTeacherAppointments(Long teacherId) {
         List<Appointment> list = lambdaQuery()
                 .eq(Appointment::getTeacherId, teacherId)
+                .eq(Appointment::getInitiator, 0)  // 学员发起的（教员收到的）
                 .orderByDesc(Appointment::getCreateTime)
                 .list();
         fillOtherParty(list, false); // 对方是学员
