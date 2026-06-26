@@ -106,12 +106,16 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         List<Message> list = result.getRecords();
         java.util.Collections.reverse(list);
 
-        // 填充发送者昵称
+        // 填充发送者昵称（用循环避免 Collectors.toMap 遇到 null 值抛 NPE）
         List<Long> senderIds = list.stream().map(Message::getSenderId).distinct().collect(Collectors.toList());
         if (!senderIds.isEmpty()) {
             List<User> senders = userService.listByIds(senderIds);
-            Map<Long, String> nameMap = senders.stream().collect(Collectors.toMap(User::getId, User::getNickname));
-            Map<Long, String> avatarMap = senders.stream().collect(Collectors.toMap(User::getId, u -> fixAvatar(u.getAvatar())));
+            Map<Long, String> nameMap = new java.util.HashMap<>();
+            Map<Long, String> avatarMap = new java.util.HashMap<>();
+            for (User u : senders) {
+                nameMap.put(u.getId(), u.getNickname());
+                avatarMap.put(u.getId(), fixAvatar(u.getAvatar()));
+            }
             for (Message msg : list) {
                 msg.setSenderNickname(nameMap.get(msg.getSenderId()));
                 msg.setSenderAvatar(avatarMap.get(msg.getSenderId()));
