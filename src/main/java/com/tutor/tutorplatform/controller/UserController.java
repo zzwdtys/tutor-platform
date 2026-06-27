@@ -144,7 +144,7 @@ public class UserController extends BaseController {
         // 头像处理：如果有自定义头像且非完整URL，拼接baseUrl
         // 默认头像路径（含 "default"）视为无头像，由前端根据角色显示本地默认头像
         if (StringUtils.isNotBlank(user.getAvatar()) && !user.getAvatar().contains("default")) {
-            if (!user.getAvatar().startsWith("http")) {
+            if (!user.getAvatar().startsWith("http") && !user.getAvatar().startsWith("data:")) {
                 user.setAvatar(baseUrl + user.getAvatar());
             }
         } else {
@@ -328,6 +328,7 @@ public class UserController extends BaseController {
         publicInfo.setRole(user.getRole());
         if (StringUtils.isNotBlank(publicInfo.getAvatar())
                 && !publicInfo.getAvatar().startsWith("http")
+                && !publicInfo.getAvatar().startsWith("data:")
                 && !publicInfo.getAvatar().contains("default")) {
             publicInfo.setAvatar(baseUrl + publicInfo.getAvatar());
         } else if (StringUtils.isNotBlank(publicInfo.getAvatar()) && publicInfo.getAvatar().contains("default")) {

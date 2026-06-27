@@ -36,7 +36,7 @@ public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> impleme
         if (avatar == null || avatar.isEmpty()) return null;
         // 默认头像路径视为无头像，由前端显示本地默认头像
         if (avatar.contains("default")) return null;
-        if (avatar.startsWith("http")) return avatar;
+        if (avatar.startsWith("http") || avatar.startsWith("data:")) return avatar;
         return baseUrl + avatar;
     }
 
